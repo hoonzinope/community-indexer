@@ -13,6 +13,9 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Service
 public class MessageProduceService {
 
@@ -33,13 +36,11 @@ public class MessageProduceService {
 
     public void produce() {
         outboxDAO.getOutboxData()
-                // outbox에 대한 처리 로직
                 .forEach(this::produceMessage);
     }
 
     public void produceFailed() {
         outboxDAO.getFailedOutboxData()
-                // outbox에 대한 처리 로직
                 .forEach(this::produceMessage);
     }
 
@@ -50,12 +51,14 @@ public class MessageProduceService {
                     rabbitMQConfig.getRoutingKey(),
                     convertToJson(outbox)
             );
-            // outbox 상태 업데이트
+            // 메시지 전송 후 outbox 상태를 PROCESSED로 업데이트
             outbox.setStatus("COMPLETED");
+            outbox.setProcessed_ts(LocalDateTime.now());
             outboxDAO.updateOutboxStatus(outbox);
         } catch (Exception e) {
             // 예외 발생 시 outbox 상태를 FAILED로 업데이트
             outbox.setStatus("FAILED");
+            outbox.setProcessed_ts(LocalDateTime.now());
             outboxDAO.updateOutboxStatus(outbox);
         }
     }
