@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- mapper DTD 선언 -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- SQL Mapping -->
+<mapper namespace="com.example.searchWorker.repository.PostMapper">
+    <select id="getPostById"
+        parameterType="long"
+            resultType="com.example.searchWorker.model.Post">
+        select
+            post_seq,
+            title,
+            content,
+            insert_ts,
+            update_ts,
+            view_count,
+            delete_ts,
+            delete_flag,
+            user_seq,
+            subject_seq,
+        from post
+        where post_seq = #{post_seq}
+    </select>
+
+    <select id="getPostByIdList"
+        parameterType="java.util.List"
+            resultType="com.example.searchWorker.model.Post">
+        select
+            post_seq,
+            title,
+            content,
+            insert_ts,
+            update_ts,
+            view_count,
+            delete_ts,
+            delete_flag,
+            user_seq,
+            subject_seq
+        from post
+        where post_seq in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+</mapper>

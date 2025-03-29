@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- mapper DTD 선언 -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- SQL Mapping -->
+<mapper namespace="com.example.searchWorker.repository.OutboxMapper">
+    <select id="getOutboxData"
+            resultType="com.example.searchWorker.model.OutBox">
+        select
+            id,
+            aggregate_type,
+            aggregate_id,
+            event_type,
+            payload,
+            create_time,
+            processed_ts,
+            status
+        from
+            outbox
+        where
+            status = 'PENDING'
+    </select>
+
+    <select id="getOutboxFailedData"
+            resultType="com.example.searchWorker.model.OutBox">
+        <![CDATA[
+            select
+                id,
+                aggregate_type,
+                aggregate_id,
+                event_type,
+                payload,
+                create_time,
+                processed_ts,
+                status
+            from
+                outbox
+            where
+                status = 'FAILED'
+                and processed_ts < DATE_SUB(NOW(), INTERVAL 1 DAY)
+        ]]>
+    </select>
+
+    <update id="updateOutboxStatus"
+        parameterType="com.example.searchWorker.model.OutBox">
+        update outbox
+        set status = #{status},
+            processed_ts = now()
+        where id = #{id}
+    </update>
+</mapper>

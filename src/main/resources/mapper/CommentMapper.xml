@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- mapper DTD 선언 -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- SQL Mapping -->
+<mapper namespace="com.example.searchWorker.repository.CommentMapper">
+    <select id="getCommentById"
+            parameterType="long"
+            resultType="com.example.searchWorker.model.Comment">
+        select
+            comment_seq,
+            post_seq,
+            content,
+            insert_ts,
+            update_ts,
+            delete_ts,
+            delete_flag,
+            user_seq
+        from
+            comment
+        where
+            comment_seq = #{comment_seq}
+    </select>
+
+    <select id="getCommentByIdList"
+            parameterType="java.util.List"
+            resultType="com.example.searchWorker.model.Comment">
+        select
+            comment_seq,
+            post_seq,
+            content,
+            insert_ts,
+            update_ts,
+            delete_ts,
+            delete_flag,
+            user_seq
+        from
+            comment
+        where
+            comment_seq in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+</mapper>
