@@ -7,7 +7,9 @@ import com.example.searchWorker.model.OutBox;
 import com.example.searchWorker.model.Post;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -72,7 +74,7 @@ public class MessageConsumeService {
         // Elasticsearch에 데이터 전송 로직
         String ES_URL = es_url + "/posts/post/" + post.getPost_seq();
         // HttpClient 생성
-        sendToSearchEngine(jsonObject, ES_URL);
+        sendToSearchEngine(jsonObject, ES_URL, outbox.getEvent_type());
 
     }
 
@@ -96,21 +98,24 @@ public class MessageConsumeService {
         String ES_URL = es_url + "/comments/comment/" + comment.getComment_seq();
 
         // HttpClient 생성
-        sendToSearchEngine(jsonObject, ES_URL);
+        sendToSearchEngine(jsonObject, ES_URL, outbox.getEvent_type());
     }
 
-    private void sendToSearchEngine(JSONObject jsonObject, String ES_URL) {
+    private void sendToSearchEngine(JSONObject jsonObject, String ES_URL, String method) {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            // HTTP POST 요청 생성
-            HttpPost httpPost = new HttpPost(ES_URL);
-
-            // 인덱싱할 JSON 문서 생성
-            StringEntity entity = new StringEntity(jsonObject.toJSONString(), "UTF-8");
-            httpPost.setEntity(entity);
-            httpPost.setHeader("Content-Type", "application/json");
+            HttpRequestBase request;
+            if ("DELETE".equalsIgnoreCase(method)) {
+                request = new HttpDelete(ES_URL);
+            } else {
+                HttpPost httpPost = new HttpPost(ES_URL);
+                StringEntity entity = new StringEntity(jsonObject.toJSONString(), "UTF-8");
+                httpPost.setEntity(entity);
+                httpPost.setHeader("Content-Type", "application/json");
+                request = httpPost;
+            }
 
             // 요청 실행
-            try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
+            try (CloseableHttpResponse response = httpClient.execute(request)) {
                 System.out.println("응답 상태: " + response.getStatusLine());
 
                 HttpEntity responseEntity = response.getEntity();
