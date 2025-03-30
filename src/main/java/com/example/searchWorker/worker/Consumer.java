@@ -50,6 +50,7 @@ public class Consumer {
             channel.basicAck(deliveryTag, false);
         } catch (Exception e) {
             // 예외 발생 시, 로그 출력
+            e.printStackTrace();
             System.err.println("메시지 처리 실패: " + e.getMessage());
             try {
                 // 재시도 정책이 적용되더라도, 최종 실패 시 DLQ로 보내기 위해 requeue=false로 설정
@@ -93,6 +94,7 @@ public class Consumer {
             }
         } catch (Exception e) {
             // 예외 발생 시, 로그 출력
+            e.printStackTrace();
             System.err.println("메시지 처리 실패: " + e.getMessage());
             try {
                 // 재시도 정책이 적용되더라도, 최종 실패 시 DLQ로 보내기 위해 requeue=false로 설정
