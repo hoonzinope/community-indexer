@@ -32,17 +32,17 @@ public class Consumer {
     private MessageConsumeService messageConsumeService;
 
     @RabbitListener(queues = "${rabbitmq.queue.name}")
-    public void consume(Message message, Channel channel){
+    public void consume(@Payload JSONObject msg, Message message, Channel channel){
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
 
         try {
-            // 메시지 바디를 문자열로 변환
-            String messageBody = new String(message.getBody());
-            System.out.println("Received message: " + messageBody);
-
-            // 문자열을 JSONObject로 파싱
-            JSONParser parser = new JSONParser();
-            JSONObject msg = (JSONObject) parser.parse(messageBody);
+//            // 메시지 바디를 문자열로 변환
+//            String messageBody = new String(message.getBody());
+//
+//            // 문자열을 JSONObject로 파싱
+//            JSONParser parser = new JSONParser();
+//            JSONObject msg = (JSONObject) parser.parse(messageBody);
+            System.out.println("Received message: " + msg);
 
             OutBox outBox = convertToOutBox(msg);
             // 메시지 처리 로직 실행
@@ -65,20 +65,19 @@ public class Consumer {
     }
 
     @RabbitListener(queues = "${rabbitmq.dlx.queue.name}")
-    public void consumeDLQ(Message message, Channel channel) {
+    public void consumeDLQ(@Payload JSONObject msg, Message message, Channel channel) {
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
 
         try {
-            // 메시지 바디를 문자열로 변환
-            String messageBody = new String(message.getBody());
-            System.out.println("Received DLQ message: " + messageBody);
+//            // 메시지 바디를 문자열로 변환
+//            String messageBody = new String(message.getBody());
+//
+//            // 문자열을 JSONObject로 파싱
+//            JSONParser parser = new JSONParser();
+//            JSONObject msg = (JSONObject) parser.parse(messageBody);
 
-            // 문자열을 JSONObject로 파싱
-            JSONParser parser = new JSONParser();
-            JSONObject msg = (JSONObject) parser.parse(messageBody);
-
+            System.out.println("Received DLQ message: " + msg);
             OutBox outBox = convertToOutBox(msg);
-            System.out.println("DLQ OutBox: " + outBox);
             try {
                 // 메시지 처리 로직 실행
                 messageConsumeService.consume(outBox);
