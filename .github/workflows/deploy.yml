@@ -1,0 +1,23 @@
+name: Deploy Spring Boot Application
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Build Docker Image
+        run: docker build --build-arg ACTIVE_PROFILE=dev -t community-indexer:latest .
+
+      - name: Deploy Docker Container
+        run: |
+          docker stop indexer-container  || true
+          docker rm indexer-container  || true
+          docker run -d --name indexer-container -p 9080:9080 --network hoonzi_network community-indexer:latest
