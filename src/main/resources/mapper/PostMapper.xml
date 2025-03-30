@@ -18,7 +18,7 @@
             delete_ts,
             delete_flag,
             user_seq,
-            subject_seq,
+            subject_seq
         from post
         where post_seq = #{post_seq}
     </select>

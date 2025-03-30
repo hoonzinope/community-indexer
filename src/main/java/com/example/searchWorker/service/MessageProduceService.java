@@ -8,6 +8,8 @@ import com.example.searchWorker.model.OutBox;
 import com.rabbitmq.client.AMQP;
 import org.json.simple.JSONObject;
 import org.springframework.amqp.core.Exchange;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,16 @@ public class MessageProduceService {
 
     private void produceMessage(OutBox outbox) {
         try {
+            System.out.println("Producing message: " + convertToJson(outbox));
+
+            MessageProperties properties = new MessageProperties();
+            properties.setContentType(MessageProperties.CONTENT_TYPE_JSON);
+
+            Message message = new Message(
+                    convertToJson(outbox).toString().getBytes(),
+                    properties
+            );
+
             rabbitTemplate.convertAndSend(
                     rabbitMQConfig.getExchangeName(),
                     rabbitMQConfig.getRoutingKey(),
@@ -70,8 +82,8 @@ public class MessageProduceService {
         jsonObject.put("aggregate_id", outbox.getAggregate_id());
         jsonObject.put("event_type", outbox.getEvent_type());
         jsonObject.put("payload", outbox.getPayload());
-        jsonObject.put("created_ts", outbox.getCreated_ts());
-        jsonObject.put("processed_ts", outbox.getProcessed_ts());
+        jsonObject.put("created_ts", outbox.getCreated_ts().toString());
+        jsonObject.put("processed_ts", outbox.getProcessed_ts().toString());
         jsonObject.put("status", outbox.getStatus());
         return jsonObject;
     }

@@ -13,9 +13,9 @@
             post_seq,
             content,
             insert_ts,
-            update_ts,
             delete_ts,
             delete_flag,
+            parent_comment_seq,
             user_seq
         from
             comment
@@ -31,9 +31,9 @@
             post_seq,
             content,
             insert_ts,
-            update_ts,
             delete_ts,
             delete_flag,
+            parent_comment_seq,
             user_seq
         from
             comment

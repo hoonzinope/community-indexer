@@ -13,7 +13,7 @@
             aggregate_id,
             event_type,
             payload,
-            create_time,
+            created_ts,
             processed_ts,
             status
         from
@@ -22,7 +22,7 @@
             status = 'PENDING'
     </select>
 
-    <select id="getOutboxFailedData"
+    <select id="getFailedOutboxData"
             resultType="com.example.searchWorker.model.OutBox">
         <![CDATA[
             select
@@ -31,14 +31,14 @@
                 aggregate_id,
                 event_type,
                 payload,
-                create_time,
+                created_ts,
                 processed_ts,
                 status
             from
                 outbox
             where
                 status = 'FAILED'
-                and processed_ts < DATE_SUB(NOW(), INTERVAL 1 DAY)
+                -- and processed_ts < DATE_SUB(NOW(), INTERVAL 1 DAY)
         ]]>
     </select>
 

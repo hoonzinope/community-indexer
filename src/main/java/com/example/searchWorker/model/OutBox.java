@@ -1,10 +1,12 @@
 package com.example.searchWorker.model;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
+@Builder
 public class OutBox {
     Long id;
     String aggregate_type;
